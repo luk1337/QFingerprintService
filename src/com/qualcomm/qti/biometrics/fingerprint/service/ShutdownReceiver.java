@@ -15,7 +15,7 @@ public class ShutdownReceiver extends BroadcastReceiver {
 
     public void onReceive(Context context, Intent intent) {
         Native jni = new Native();
-        if (jni.isFingerprintEnabled()) {
+        if (!jni.isFingerprintEnabled()) {
             Log.i(TAG, "fingerprint not enabled");
             return;
         }
