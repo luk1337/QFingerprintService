@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          android:sharedUserId="android.uid.system"
+          package="com.qualcomm.qti.biometrics.fingerprint.service"
+          android:versionCode="24"
+          android:versionName="7.0" >
+
+    <permission android:name="com.qualcomm.qti.biometrics.fingerprint.USES_FINGERPRINT" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+
+    <application
+        android:persistent="true"
+        android:allowBackup="false">
+
+        <service android:name="com.qualcomm.qti.biometrics.fingerprint.service.FingerprintService" android:permission="com.qualcomm.qti.biometrics.fingerprint.USES_FINGERPRINT" android:exported="true">
+            <intent-filter>
+                <action android:name="com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService" />
+                <action android:name="com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintAuthenticator" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name=".AndroidServices$AlarmReceiver" />
+
+        <receiver android:name=".ShutdownReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.ACTION_SHUTDOWN" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>
