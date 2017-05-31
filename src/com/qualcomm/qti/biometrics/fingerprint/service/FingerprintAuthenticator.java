@@ -82,30 +82,30 @@ public class FingerprintAuthenticator implements AutoCloseable {
         }
 
         @Override
-        public void onEnrolled(int n, int n2) {
+        public void onEnrolled(int fingerprintId, int remaining) {
             Log.e(TAG, "FingerprintAuthenticator unexpected call to onEnrolled");
         }
 
         @Override
-        public void onError(int i) {
-            Log.d(TAG, "onError " + toHexString(this.mNonce) + " " + i);
+        public void onError(int errorId) {
+            Log.d(TAG, "onError " + toHexString(mNonce) + " " + errorId);
 
             try {
-                mListener.onUserVerificationResult(mNonce, i, AUTH_NAME, 0L, 0L, new byte[0]);
+                mListener.onUserVerificationResult(mNonce, errorId, AUTH_NAME, 0L, 0L, new byte[0]);
             } catch (RemoteException ex) {
                 Log.e(TAG, ex.getLocalizedMessage());
             }
         }
 
         @Override
-        public void onMatched(int i, String str, long lng, byte[] array) {
-            Log.d(TAG, "onMatched " + str + ":" + i + " " + lng + " " + toHexString(array));
-            if (i != 0) {
+        public void onMatched(int fingerprintId, String user, long lng, byte[] array) {
+            Log.d(TAG, "onMatched " + user + ":" + fingerprintId + " " + lng + " " + toHexString(array));
+            if (fingerprintId != 0) {
                 return;
             }
 
             try {
-                mListener.onUserVerificationResult(mNonce, 1, AUTH_NAME, lng, i, array);
+                mListener.onUserVerificationResult(mNonce, 1, AUTH_NAME, lng, fingerprintId, array);
             } catch (RemoteException ex) {
                 Log.e(TAG, ex.getLocalizedMessage());
             }
@@ -117,7 +117,7 @@ public class FingerprintAuthenticator implements AutoCloseable {
         }
 
         @Override
-        public void onStatus(int n, byte[] array) {
+        public void onStatus(int status, byte[] array) {
         }
     }
 }

@@ -7,15 +7,15 @@ import android.os.Parcel;
 import android.os.RemoteException;
 
 public interface IFingerprintServiceCallback extends IInterface {
-    void onMatched(int p0, final String p1) throws RemoteException;
+    void onMatched(int fingerprintId, final String user) throws RemoteException;
 
-    void onRemoved(int p0) throws RemoteException;
+    void onRemoved(int fingerprintId) throws RemoteException;
 
-    void onError(int p0) throws RemoteException;
+    void onError(int errorId) throws RemoteException;
 
-    void onStatus(int p0, byte[] p1) throws RemoteException;
+    void onStatus(int status, byte[] p1) throws RemoteException;
 
-    void onEnrolled(int p0, int p1) throws RemoteException;
+    void onEnrolled(int fingerprintId, int remaining) throws RemoteException;
 
     public abstract static class Stub extends Binder implements IFingerprintServiceCallback {
         private static final String DESCRIPTOR = "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback";
@@ -94,12 +94,12 @@ public interface IFingerprintServiceCallback extends IInterface {
             }
 
             @Override
-            public void onMatched(int n, String s) throws RemoteException {
+            public void onMatched(int fingerprintId, String user) throws RemoteException {
                 Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeInt(n);
-                    obtain.writeString(s);
+                    obtain.writeInt(fingerprintId);
+                    obtain.writeString(user);
 
                     mRemote.transact(TRANSACTION_onMatched, obtain, null, 1);
                 } finally {
@@ -108,11 +108,11 @@ public interface IFingerprintServiceCallback extends IInterface {
             }
 
             @Override
-            public void onRemoved(int n) throws RemoteException {
+            public void onRemoved(int fingerprintId) throws RemoteException {
                 Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeInt(n);
+                    obtain.writeInt(fingerprintId);
 
                     mRemote.transact(TRANSACTION_onRemoved, obtain, null, 1);
                 } finally {
@@ -121,11 +121,11 @@ public interface IFingerprintServiceCallback extends IInterface {
             }
 
             @Override
-            public void onError(int n) throws RemoteException {
+            public void onError(int errorId) throws RemoteException {
                 Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeInt(n);
+                    obtain.writeInt(errorId);
 
                     mRemote.transact(TRANSACTION_onError, obtain, null, 1);
                 } finally {
@@ -134,11 +134,11 @@ public interface IFingerprintServiceCallback extends IInterface {
             }
 
             @Override
-            public void onStatus(int n, byte[] array) throws RemoteException {
+            public void onStatus(int status, byte[] array) throws RemoteException {
                 Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeInt(n);
+                    obtain.writeInt(status);
                     obtain.writeByteArray(array);
 
                     mRemote.transact(TRANSACTION_onStatus, obtain, null, 1);
@@ -148,12 +148,12 @@ public interface IFingerprintServiceCallback extends IInterface {
             }
 
             @Override
-            public void onEnrolled(int n, int n2) throws RemoteException {
+            public void onEnrolled(int fingerprintId, int remaining) throws RemoteException {
                 Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeInt(n);
-                    obtain.writeInt(n2);
+                    obtain.writeInt(fingerprintId);
+                    obtain.writeInt(remaining);
 
                     mRemote.transact(TRANSACTION_onEnrolled, obtain, null, 1);
                 } finally {

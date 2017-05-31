@@ -87,11 +87,11 @@ public class AndroidServices implements IAndroidServices {
     }
 
     @Override
-    public void setTimer(int i) {
+    public void setTimer(int delay) {
         synchronized (this) {
-            Log.d(TAG, "setTimer " + i);
-            if (i > 0) {
-                mAlarmReceiver.set(mContext, i);
+            Log.d(TAG, "setTimer " + delay);
+            if (delay > 0) {
+                mAlarmReceiver.set(mContext, delay);
             } else {
                 mAlarmReceiver.cancel(mContext);
             }
@@ -99,21 +99,21 @@ public class AndroidServices implements IAndroidServices {
     }
 
     @Override
-    public void setWakelock(boolean b, boolean b2) {
-        if (b2) {
-            if (mWakelockCount++ == 0) {
+    public void setWakelock(boolean active, boolean partial) {
+        if (partial) {
+            if (active && mWakelockCount++ == 0) {
                 Log.d(TAG, "acquire partial wakelock");
                 mWakelock.acquire();
-            } else if (!b && mWakelockCount-- == 0) {
+            } else if (!active && mWakelockCount-- == 0) {
                 Log.d(TAG, "release partial wakelock");
                 mWakelock.release();
             }
         } else {
-            if (b && mFullWakelockCount++ == 0) {
+            if (active && mFullWakelockCount++ == 0) {
                 Log.d(TAG, "acquire full wakelock");
                 mFullWakelock.acquire();
                 return;
-            } else if (!b && mFullWakelockCount-- == 0) {
+            } else if (!active && mFullWakelockCount-- == 0) {
                 Log.d(TAG, "release full wakelock");
                 mFullWakelock.release();
             }
@@ -154,8 +154,8 @@ public class AndroidServices implements IAndroidServices {
             }
         }
 
-        public void set(Context context, int n) {
-            ((AlarmManager) context.getSystemService("alarm")).set(0, System.currentTimeMillis() + n, PendingIntent.getBroadcast(context, 0, new Intent(context, AlarmReceiver.class), 0));
+        public void set(Context context, int delay) {
+            ((AlarmManager) context.getSystemService("alarm")).set(0, System.currentTimeMillis() + delay, PendingIntent.getBroadcast(context, 0, new Intent(context, AlarmReceiver.class), 0));
         }
     }
 }

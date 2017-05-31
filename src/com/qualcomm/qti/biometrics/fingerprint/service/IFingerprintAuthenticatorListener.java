@@ -7,7 +7,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 
 public interface IFingerprintAuthenticatorListener extends IInterface {
-    void onUserVerificationResult(byte[] p0, int p1, String p2, long p3, long p4, byte[] p5) throws RemoteException;
+    void onUserVerificationResult(byte[] nonce, int errorId, String authName, long p3, long p4, byte[] p5) throws RemoteException;
 
     void onCancel(byte[] p0) throws RemoteException;
 
@@ -80,16 +80,16 @@ public interface IFingerprintAuthenticatorListener extends IInterface {
             }
 
             @Override
-            public void onUserVerificationResult(byte[] array, int n, String s, long n2, long n3, byte[] array2) throws RemoteException {
+            public void onUserVerificationResult(byte[] nonce, int errorId, String authName, long n, long n2, byte[] array) throws RemoteException {
                 final Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
-                    obtain.writeByteArray(array);
-                    obtain.writeInt(n);
-                    obtain.writeString(s);
+                    obtain.writeByteArray(nonce);
+                    obtain.writeInt(errorId);
+                    obtain.writeString(authName);
+                    obtain.writeLong(n);
                     obtain.writeLong(n2);
-                    obtain.writeLong(n3);
-                    obtain.writeByteArray(array2);
+                    obtain.writeByteArray(array);
 
                     mRemote.transact(1, obtain, null, 1);
                 } finally {

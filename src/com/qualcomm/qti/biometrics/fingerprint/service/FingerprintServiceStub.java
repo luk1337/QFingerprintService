@@ -125,15 +125,15 @@ public class FingerprintServiceStub implements AutoCloseable {
             return Integer.toString(System.identityHashCode(o));
         }
 
-        private void notifyListenerMatched(int i, String s) {
-            Log.d(TAG, "notify listener scanned: fingerprintId" + i + " hc: " + getId());
+        private void notifyListenerMatched(int fingerprintId, String user) {
+            Log.d(TAG, "notify listener scanned: fingerprintId" + fingerprintId + " hc: " + getId());
 
             for (int j = 0; j < mCallbacks.beginBroadcast(); j++) {
                 try {
                     IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(j);
 
                     Log.d(TAG, "removed callback to hc: " + getId(fingerprintServiceCallback));
-                    fingerprintServiceCallback.onMatched(i, s);
+                    fingerprintServiceCallback.onMatched(fingerprintId, user);
                 } catch (RemoteException ex) {
                     Log.e("qfp-service", ex.getLocalizedMessage());
                 }
@@ -142,15 +142,15 @@ public class FingerprintServiceStub implements AutoCloseable {
             mCallbacks.finishBroadcast();
         }
 
-        private void notifyListenerRemoved(int i) {
-            Log.d(TAG, "notify listener remove: fingerprintId: " + i + " hc: " + getId());
+        private void notifyListenerRemoved(int fingerprintId) {
+            Log.d(TAG, "notify listener remove: fingerprintId: " + fingerprintId + " hc: " + getId());
 
             for (int j = 0; j < mCallbacks.beginBroadcast(); j++) {
                 try {
                     IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(j);
 
                     Log.d(TAG, "removed callback to hc: " + getId(fingerprintServiceCallback));
-                    fingerprintServiceCallback.onRemoved(i);
+                    fingerprintServiceCallback.onRemoved(fingerprintId);
                 } catch (RemoteException ex) {
                     Log.e("qfp-service", ex.getLocalizedMessage());
                 }
@@ -159,15 +159,15 @@ public class FingerprintServiceStub implements AutoCloseable {
             mCallbacks.finishBroadcast();
         }
 
-        private void notifyListenersEnrolled(int i, int j) {
-            Log.d(TAG, "notify listeners enroll result: fingerprintId: " + i + " remaining: " + j + " hc: " + getId());
+        private void notifyListenersEnrolled(int fingerprintId, int remaining) {
+            Log.d(TAG, "notify listeners enroll result: fingerprintId: " + fingerprintId + " remaining: " + remaining + " hc: " + getId());
 
             for (int k = 0; k < mCallbacks.beginBroadcast(); k++) {
                 try {
-                    IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(j);
+                    IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(k);
 
                     Log.d(TAG, "enrolled callback to hc: " + getId(fingerprintServiceCallback));
-                    fingerprintServiceCallback.onEnrolled(i, j);
+                    fingerprintServiceCallback.onEnrolled(fingerprintId, remaining);
                 } catch (RemoteException ex) {
                     Log.e("qfp-service", ex.getLocalizedMessage());
                 }
@@ -176,15 +176,15 @@ public class FingerprintServiceStub implements AutoCloseable {
             mCallbacks.finishBroadcast();
         }
 
-        private void notifyListenersError(int i) {
-            Log.d(TAG, "notify listener: error: " + i + " hc: " + getId());
+        private void notifyListenersError(int error) {
+            Log.d(TAG, "notify listener: error: " + error + " hc: " + getId());
 
             for (int j = 0; j < mCallbacks.beginBroadcast(); j++) {
                 try {
                     IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(j);
 
                     Log.d(TAG, "error callback to hc: " + getId(fingerprintServiceCallback));
-                    fingerprintServiceCallback.onError(i);
+                    fingerprintServiceCallback.onError(error);
                 } catch (RemoteException ex) {
                     Log.e("qfp-service", ex.getLocalizedMessage());
                 }
@@ -193,15 +193,15 @@ public class FingerprintServiceStub implements AutoCloseable {
             mCallbacks.finishBroadcast();
         }
 
-        private void notifyListenersStatus(int i, byte[] array) {
-            Log.d(TAG, "notify listener: status: " + i + " hc: " + getId());
+        private void notifyListenersStatus(int status, byte[] array) {
+            Log.d(TAG, "notify listener: status: " + status + " hc: " + getId());
 
             for (int j = 0; j < mCallbacks.beginBroadcast(); j++) {
                 try {
                     IFingerprintServiceCallback fingerprintServiceCallback = (IFingerprintServiceCallback) mCallbacks.getBroadcastItem(j);
 
                     Log.d(TAG, "status callback to hc: " + getId(fingerprintServiceCallback));
-                    fingerprintServiceCallback.onStatus(i, array);
+                    fingerprintServiceCallback.onStatus(status, array);
                 } catch (RemoteException ex) {
                     Log.e("qfp-service", ex.getLocalizedMessage());
                 }
@@ -215,33 +215,33 @@ public class FingerprintServiceStub implements AutoCloseable {
         }
 
         @Override
-        public void onEnrolled(int i, int j) {
-            Log.v(TAG, "received callback enroll result: fingerprintId: " + i + " remaining: " + j + " hc: " + getId());
-            notifyListenersEnrolled(i, j);
+        public void onEnrolled(int fingerprintId, int remaining) {
+            Log.v(TAG, "received callback enroll result: fingerprintId: " + fingerprintId + " remaining: " + remaining + " hc: " + getId());
+            notifyListenersEnrolled(fingerprintId, remaining);
         }
 
         @Override
-        public void onError(int i) {
-            Log.v(TAG, "received callback error: " + i + " hc: " + getId());
-            notifyListenersError(i);
+        public void onError(int errorId) {
+            Log.v(TAG, "received callback error: " + errorId + " hc: " + getId());
+            notifyListenersError(errorId);
         }
 
         @Override
-        public void onMatched(int i, String str, long n, byte[] array) {
-            Log.v(TAG, "received callback scanned: fingerprintId: " + i + " User: " + str + " hc: " + getId());
-            notifyListenerMatched(i, str);
+        public void onMatched(int fingerprintId, String user, long n, byte[] array) {
+            Log.v(TAG, "received callback scanned: fingerprintId: " + fingerprintId + " User: " + user + " hc: " + getId());
+            notifyListenerMatched(fingerprintId, user);
         }
 
         @Override
-        public void onRemoved(int i) {
-            Log.v(TAG, "received callback removed: fingerprintId: " + i + " hc: " + getId());
-            notifyListenerRemoved(i);
+        public void onRemoved(int fingerprintId) {
+            Log.v(TAG, "received callback removed: fingerprintId: " + fingerprintId + " hc: " + getId());
+            notifyListenerRemoved(fingerprintId);
         }
 
         @Override
-        public void onStatus(int i, byte[] array) {
-            Log.v(TAG, "received callback stats: " + i + " hc: " + getId());
-            notifyListenersStatus(i, array);
+        public void onStatus(int status, byte[] array) {
+            Log.v(TAG, "received callback status: " + status + " hc: " + getId());
+            notifyListenersStatus(status, array);
         }
     }
 
@@ -259,14 +259,14 @@ public class FingerprintServiceStub implements AutoCloseable {
             }
         }
 
-        public void onCallbackDied(IFingerprintServiceCallback fingerprintServiceCallback, Object o) {
-            Log.d(TAG, "CB Process died with cookie: " + o.toString() + "cb hc: " + Integer.toString(System.identityHashCode(fingerprintServiceCallback)));
+        public void onCallbackDied(IFingerprintServiceCallback fingerprintServiceCallback, Object cookie) {
+            Log.d(TAG, "CB Process died with cookie: " + cookie.toString() + "cb hc: " + Integer.toString(System.identityHashCode(fingerprintServiceCallback)));
 
             try {
                 FingerprintServiceStub.this.cancel();
                 kill();
 
-                super.onCallbackDied(fingerprintServiceCallback, o);
+                super.onCallbackDied(fingerprintServiceCallback, cookie);
             } catch (Exception ex) {
                 // Do nothing
             }

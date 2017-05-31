@@ -5,9 +5,9 @@ public interface IAndroidServices {
 
     void resetLivenessAlert();
 
-    void setTimer(int p0);
+    void setTimer(int delay);
 
-    void setWakelock(boolean p0, boolean p1);
+    void setWakelock(boolean active, boolean partial);
 
     void showLivenessAlert();
 }
