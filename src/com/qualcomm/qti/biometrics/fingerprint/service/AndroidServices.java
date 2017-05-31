@@ -133,7 +133,7 @@ public class AndroidServices implements IAndroidServices {
     }
 
     public static class AlarmReceiver extends BroadcastReceiver {
-        Native mJni;
+        private Native mJni;
 
         public AlarmReceiver() {
             mJni = new Native();
