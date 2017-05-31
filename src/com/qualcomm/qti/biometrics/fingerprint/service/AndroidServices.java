@@ -43,8 +43,8 @@ public class AndroidServices implements IAndroidServices {
         mHandler = new Handler();
 
         PowerManager powerManager = (PowerManager) mContext.getSystemService("power");
-        mWakelock = powerManager.newWakeLock(1, "qfp-service");
-        mFullWakelock = powerManager.newWakeLock(805306394, "qfp-service");
+        mWakelock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "qfp-service");
+        mFullWakelock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "qfp-service");
     }
 
     private void uiResetLivenessAlert() {
