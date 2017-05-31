@@ -1,73 +1,83 @@
 package com.qualcomm.qti.biometrics.fingerprint.service;
 
-import android.util.*;
-import android.os.*;
-import android.os.PowerManager.*;
-import android.content.*;
-import android.content.SharedPreferences.*;
-import android.app.*;
+import android.app.AlarmManager;
+import android.app.KeyguardManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences.Editor;
+import android.os.Handler;
+import android.os.PowerManager;
+import android.os.PowerManager.WakeLock;
+import android.util.Log;
 
-public class AndroidServices implements IAndroidServices
-{
+public class AndroidServices implements IAndroidServices {
+    private static final String TAG = "qfp-service";
     private static final String PREFS_SHOW_LIVENESS_ALERT_NAME = "PrefsShowLivenessAlert";
-    static final int REQUEST_KEYGUARD = 0;
-    static final int REQUEST_PAYMENT = 1;
     private static final String SHOW_LIVENESS_ALERT_STR = "ShowLivenessAlert";
-    static final String TAG = "qfp-service";
-    private static boolean livenessAlertIsShown;
-    AlarmReceiver alarmReceiver;
+    private static final int REQUEST_KEYGUARD = 0;
+    private static final int REQUEST_PAYMENT = 1;
+
     private Context mContext;
-    private WakeLock mFullWakelock;
-    private int mFullWakelockCount;
+
+    private AlarmReceiver mAlarmReceiver;
     private Handler mHandler;
+
     private WakeLock mWakelock;
     private int mWakelockCount;
-    
+    private WakeLock mFullWakelock;
+    private int mFullWakelockCount;
+
+    private static boolean livenessAlertIsShown;
+
     static {
         AndroidServices.livenessAlertIsShown = false;
     }
-    
-    public AndroidServices(final Context mContext) {
-        this.alarmReceiver = new AlarmReceiver();
-        this.mWakelockCount = 0;
-        this.mFullWakelockCount = 0;
-        this.mHandler = new Handler();
-        Log.d("qfp-service", "AndroidServices ctor");
+
+    public AndroidServices(Context mContext) {
+        Log.d(TAG, "AndroidServices ctor");
         this.mContext = mContext;
-        final PowerManager powerManager = (PowerManager)mContext.getSystemService("power");
-        this.mWakelock = powerManager.newWakeLock(1, "qfp-service");
-        this.mFullWakelock = powerManager.newWakeLock(805306394, "qfp-service");
+
+        mAlarmReceiver = new AlarmReceiver();
+        mHandler = new Handler();
+
+        PowerManager powerManager = (PowerManager) mContext.getSystemService("power");
+        mWakelock = powerManager.newWakeLock(1, "qfp-service");
+        mFullWakelock = powerManager.newWakeLock(805306394, "qfp-service");
     }
-    
+
     private void uiResetLivenessAlert() {
-        final Editor edit = this.mContext.getSharedPreferences("PrefsShowLivenessAlert", 0).edit();
-        edit.putString("ShowLivenessAlert", "Yes");
+        final Editor edit = mContext.getSharedPreferences(PREFS_SHOW_LIVENESS_ALERT_NAME, 0).edit();
+        edit.putString(SHOW_LIVENESS_ALERT_STR, "Yes");
         edit.commit();
     }
-    
+
     private void uiShowLivenessAlert() {
         if (AndroidServices.livenessAlertIsShown) {
             return;
         }
-        if (this.mContext.getSharedPreferences("PrefsShowLivenessAlert", 0).getString("ShowLivenessAlert", "Yes").contains("No")) {
+
+        if (mContext.getSharedPreferences(PREFS_SHOW_LIVENESS_ALERT_NAME, 0).getString(SHOW_LIVENESS_ALERT_STR, "Yes").contains("No")) {
             return;
         }
     }
-    
+
     @Override
     public int checkRequestingAppType() {
-        if (((KeyguardManager)this.mContext.getSystemService("keyguard")).inKeyguardRestrictedInputMode()) {
-            Log.d("qfp-service", "keyguard is locked at time of request");
-            return 0;
+        if (((KeyguardManager) mContext.getSystemService("keyguard")).inKeyguardRestrictedInputMode()) {
+            Log.d(TAG, "keyguard is locked at time of request");
+            return REQUEST_KEYGUARD;
         }
-        Log.d("qfp-service", "keyguard is NOT locked at time of request");
-        return 1;
+
+        Log.d(TAG, "keyguard is NOT locked at time of request");
+        return REQUEST_PAYMENT;
     }
-    
+
     @Override
     public void resetLivenessAlert() {
         synchronized (this) {
-            this.mHandler.post((Runnable)new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     AndroidServices.this.uiResetLivenessAlert();
@@ -75,62 +85,45 @@ public class AndroidServices implements IAndroidServices
             });
         }
     }
-    
+
     @Override
-    public void setTimer(final int i) {
+    public void setTimer(int i) {
         synchronized (this) {
-            Log.d("qfp-service", "setTimer " + i);
+            Log.d(TAG, "setTimer " + i);
             if (i > 0) {
-                this.alarmReceiver.set(this.mContext, i);
-            }
-            else {
-                this.alarmReceiver.cancel(this.mContext);
+                mAlarmReceiver.set(mContext, i);
+            } else {
+                mAlarmReceiver.cancel(mContext);
             }
         }
     }
-    
+
     @Override
-    public void setWakelock(final boolean b, final boolean b2) {
-        // monitorenter(this)
-        Label_0089: {
-            if (!b2) {
-                break Label_0089;
+    public void setWakelock(boolean b, boolean b2) {
+        if (b2) {
+            if (mWakelockCount++ == 0) {
+                Log.d(TAG, "acquire partial wakelock");
+                mWakelock.acquire();
+            } else if (!b && mWakelockCount-- == 0) {
+                Log.d(TAG, "release partial wakelock");
+                mWakelock.release();
             }
-            Label_0044: {
-                if (!b) {
-                    break Label_0044;
-                }
-                try {
-                    if (this.mWakelockCount++ == 0) {
-                        Log.d("qfp-service", "acquire partial wakelock");
-                        this.mWakelock.acquire();
-                    }
-                    else if (!b && --this.mWakelockCount == 0) {
-                        Log.d("qfp-service", "release partial wakelock");
-                        this.mWakelock.release();
-                    }
-                    return;
-                }
-                finally {
-                }
-                // monitorexit(this)
+        } else {
+            if (b && mFullWakelockCount++ == 0) {
+                Log.d(TAG, "acquire full wakelock");
+                mFullWakelock.acquire();
+                return;
+            } else if (!b && mFullWakelockCount-- == 0) {
+                Log.d(TAG, "release full wakelock");
+                mFullWakelock.release();
             }
-        }
-        if (b && this.mFullWakelockCount++ == 0) {
-            Log.d("qfp-service", "acquire full wakelock");
-            this.mFullWakelock.acquire();
-            return;
-        }
-        if (!b && --this.mFullWakelockCount == 0) {
-            Log.d("qfp-service", "release full wakelock");
-            this.mFullWakelock.release();
         }
     }
-    
+
     @Override
     public void showLivenessAlert() {
         synchronized (this) {
-            this.mHandler.post((Runnable)new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     AndroidServices.this.uiShowLivenessAlert();
@@ -138,33 +131,31 @@ public class AndroidServices implements IAndroidServices
             });
         }
     }
-    
-    public static class AlarmReceiver extends BroadcastReceiver
-    {
-        Native jni;
-        
+
+    public static class AlarmReceiver extends BroadcastReceiver {
+        Native mJni;
+
         public AlarmReceiver() {
-            this.jni = new Native();
+            mJni = new Native();
         }
-        
-        public void cancel(final Context context) {
-            ((AlarmManager)context.getSystemService("alarm")).cancel(PendingIntent.getBroadcast(context, 0, new Intent(context, (Class)AlarmReceiver.class), 0));
+
+        public void cancel(Context context) {
+            ((AlarmManager) context.getSystemService("alarm")).cancel(PendingIntent.getBroadcast(context, 0, new Intent(context, AlarmReceiver.class), 0));
         }
-        
-        public void onReceive(final Context context, final Intent intent) {
-            final long open = this.jni.open();
-            if (open == 0L || open == -1L) {
-                Log.e("qfp-service", "failed native open");
+
+        public void onReceive(Context context, Intent intent) {
+            long open = mJni.open();
+            if (open == 0 || open == -1) {
+                Log.e(TAG, "failed native open");
+            } else {
+                Log.d(TAG, "notify Alarm!");
+                mJni.notifyAlarm(open);
+                mJni.close(open);
             }
-            else {
-                Log.d("qfp-service", "notify Alarm!");
-                this.jni.notifyAlarm(open);
-                this.jni.close(open);
-            }
         }
-        
-        public void set(final Context context, final int n) {
-            ((AlarmManager)context.getSystemService("alarm")).set(0, System.currentTimeMillis() + n, PendingIntent.getBroadcast(context, 0, new Intent(context, (Class)AlarmReceiver.class), 0));
+
+        public void set(Context context, int n) {
+            ((AlarmManager) context.getSystemService("alarm")).set(0, System.currentTimeMillis() + n, PendingIntent.getBroadcast(context, 0, new Intent(context, AlarmReceiver.class), 0));
         }
     }
 }

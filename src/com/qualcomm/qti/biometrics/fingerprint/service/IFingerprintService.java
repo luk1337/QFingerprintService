@@ -1,341 +1,332 @@
 package com.qualcomm.qti.biometrics.fingerprint.service;
 
-import android.os.*;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.RemoteException;
 
-public interface IFingerprintService extends IInterface
-{
+public interface IFingerprintService extends IInterface {
+    void enroll(int p0, IFingerprintServiceCallback p1) throws RemoteException;
+
+    void match(int p0, IFingerprintServiceCallback p1) throws RemoteException;
+
+    void matchAny(int p0, IFingerprintServiceCallback p1) throws RemoteException;
+
+    void remove(int p0, IFingerprintServiceCallback p1) throws RemoteException;
+
     void cancel() throws RemoteException;
-    
-    void disableFingerEvent() throws RemoteException;
-    
-    void enableFingerEvent(final int p0) throws RemoteException;
-    
-    void enroll(final int p0, final IFingerprintServiceCallback p1) throws RemoteException;
-    
-    boolean getLivenessEnabled(final byte[] p0) throws RemoteException;
-    
-    void match(final int p0, final IFingerprintServiceCallback p1) throws RemoteException;
-    
-    void matchAny(final int p0, final IFingerprintServiceCallback p1) throws RemoteException;
-    
-    void remove(final int p0, final IFingerprintServiceCallback p1) throws RemoteException;
-    
-    void setLivenessEnabled(final byte[] p0, final boolean p1) throws RemoteException;
-    
+
     String version() throws RemoteException;
-    
-    public abstract static class Stub extends Binder implements IFingerprintService
-    {
+
+    void enableFingerEvent(int p0) throws RemoteException;
+
+    void disableFingerEvent() throws RemoteException;
+
+    void setLivenessEnabled(byte[] p0, boolean p1) throws RemoteException;
+
+    boolean getLivenessEnabled(byte[] p0) throws RemoteException;
+
+    public abstract static class Stub extends Binder implements IFingerprintService {
         private static final String DESCRIPTOR = "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService";
-        static final int TRANSACTION_cancel = 5;
-        static final int TRANSACTION_disableFingerEvent = 8;
-        static final int TRANSACTION_enableFingerEvent = 7;
-        static final int TRANSACTION_enroll = 1;
-        static final int TRANSACTION_getLivenessEnabled = 10;
-        static final int TRANSACTION_match = 2;
-        static final int TRANSACTION_matchAny = 3;
-        static final int TRANSACTION_remove = 4;
-        static final int TRANSACTION_setLivenessEnabled = 9;
-        static final int TRANSACTION_version = 6;
-        
+
+        private static final int TRANSACTION_enroll = 1;
+        private static final int TRANSACTION_match = 2;
+        private static final int TRANSACTION_matchAny = 3;
+        private static final int TRANSACTION_remove = 4;
+        private static final int TRANSACTION_cancel = 5;
+        private static final int TRANSACTION_version = 6;
+        private static final int TRANSACTION_enableFingerEvent = 7;
+        private static final int TRANSACTION_disableFingerEvent = 8;
+        private static final int TRANSACTION_setLivenessEnabled = 9;
+        private static final int TRANSACTION_getLivenessEnabled = 10;
+        private static final int TRANSACTION_writeDescriptor = 1598968902;
+
         public Stub() {
-            this.attachInterface((IInterface)this, "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
+            attachInterface(this, DESCRIPTOR);
         }
-        
+
         public static IFingerprintService asInterface(final IBinder binder) {
             if (binder == null) {
                 return null;
             }
-            final IInterface queryLocalInterface = binder.queryLocalInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
+
+            final IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
             if (queryLocalInterface != null && queryLocalInterface instanceof IFingerprintService) {
-                return (IFingerprintService)queryLocalInterface;
+                return (IFingerprintService) queryLocalInterface;
             }
+
             return new Proxy(binder);
         }
-        
+
         public IBinder asBinder() {
-            return (IBinder)this;
+            return this;
         }
-        
-        public boolean onTransact(int n, final Parcel parcel, final Parcel parcel2, final int n2) throws RemoteException {
-            final int n3 = 0;
-            boolean b = false;
+
+        public boolean onTransact(int n, Parcel parcel, Parcel parcel2, int n2) throws RemoteException {
             switch (n) {
-                default: {
+                case TRANSACTION_enroll:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    enroll(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_match:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    match(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_matchAny:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    matchAny(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_remove:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    remove(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_cancel:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    cancel();
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_version:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    parcel2.writeNoException();
+                    parcel2.writeString(version());
+                    return true;
+                case TRANSACTION_enableFingerEvent:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    enableFingerEvent(parcel.readInt());
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_disableFingerEvent:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    disableFingerEvent();
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_setLivenessEnabled:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    setLivenessEnabled(parcel.createByteArray(), parcel.readInt() != 0);
+                    parcel2.writeNoException();
+                    return true;
+                case TRANSACTION_getLivenessEnabled:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    parcel2.writeNoException();
+                    parcel2.writeInt(getLivenessEnabled(parcel.createByteArray()) ? 1 : 0);
+                    return true;
+                case TRANSACTION_writeDescriptor:
+                    parcel2.writeString(DESCRIPTOR);
+                    return true;
+                default:
                     return super.onTransact(n, parcel, parcel2, n2);
-                }
-                case 1598968902: {
-                    parcel2.writeString("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    return true;
-                }
-                case 1: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.enroll(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 2: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.match(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 3: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.matchAny(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 4: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.remove(parcel.readInt(), IFingerprintServiceCallback.Stub.asInterface(parcel.readStrongBinder()));
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 5: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.cancel();
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 6: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    final String version = this.version();
-                    parcel2.writeNoException();
-                    parcel2.writeString(version);
-                    return true;
-                }
-                case 7: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.enableFingerEvent(parcel.readInt());
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 8: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.disableFingerEvent();
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 9: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    final byte[] byteArray = parcel.createByteArray();
-                    if (parcel.readInt() != 0) {
-                        b = true;
-                    }
-                    this.setLivenessEnabled(byteArray, b);
-                    parcel2.writeNoException();
-                    return true;
-                }
-                case 10: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    final boolean livenessEnabled = this.getLivenessEnabled(parcel.createByteArray());
-                    parcel2.writeNoException();
-                    n = n3;
-                    if (livenessEnabled) {
-                        n = 1;
-                    }
-                    parcel2.writeInt(n);
-                    return true;
-                }
             }
         }
-        
-        private static class Proxy implements IFingerprintService
-        {
+
+        private static class Proxy implements IFingerprintService {
             private IBinder mRemote;
-            
-            Proxy(final IBinder mRemote) {
+
+            Proxy(IBinder mRemote) {
                 this.mRemote = mRemote;
             }
-            
+
             public IBinder asBinder() {
-                return this.mRemote;
+                return mRemote;
             }
-            
+
+            public String getInterfaceDescriptor() {
+                return DESCRIPTOR;
+            }
+
+            @Override
+            public void enroll(int n, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+                IBinder binder = null;
+                if (fingerprintServiceCallback != null) {
+                    binder = fingerprintServiceCallback.asBinder();
+                }
+
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(DESCRIPTOR);
+                    obtain.writeInt(n);
+                    obtain.writeStrongBinder(binder);
+
+                    mRemote.transact(TRANSACTION_enroll, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void match(int n, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+                IBinder binder = null;
+                if (fingerprintServiceCallback != null) {
+                    binder = fingerprintServiceCallback.asBinder();
+                }
+
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeInt(n);
+                    obtain.writeStrongBinder(binder);
+
+                    mRemote.transact(TRANSACTION_match, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void matchAny(int n, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+                IBinder binder = null;
+                if (fingerprintServiceCallback != null) {
+                    binder = fingerprintServiceCallback.asBinder();
+                }
+
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeInt(n);
+                    obtain.writeStrongBinder(binder);
+
+                    mRemote.transact(TRANSACTION_matchAny, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void remove(int n, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+                IBinder binder = null;
+                if (fingerprintServiceCallback != null) {
+                    binder = fingerprintServiceCallback.asBinder();
+                }
+
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeInt(n);
+                    obtain.writeStrongBinder(binder);
+
+                    mRemote.transact(TRANSACTION_remove, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
             @Override
             public void cancel() throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.mRemote.transact(5, obtain, obtain2, 0);
+                    obtain.writeInterfaceToken(DESCRIPTOR);
+
+                    mRemote.transact(TRANSACTION_cancel, obtain, obtain2, 0);
+
                     obtain2.readException();
-                }
-                finally {
+                } finally {
                     obtain2.recycle();
                     obtain.recycle();
                 }
             }
-            
-            @Override
-            public void disableFingerEvent() throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.mRemote.transact(8, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void enableFingerEvent(final int n) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeInt(n);
-                    this.mRemote.transact(7, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void enroll(final int n, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-                IBinder binder = null;
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeInt(n);
-                    if (fingerprintServiceCallback != null) {
-                        binder = fingerprintServiceCallback.asBinder();
-                    }
-                    obtain.writeStrongBinder(binder);
-                    this.mRemote.transact(1, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            public String getInterfaceDescriptor() {
-                return "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService";
-            }
-            
-            @Override
-            public boolean getLivenessEnabled(final byte[] array) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeByteArray(array);
-                    this.mRemote.transact(10, obtain, obtain2, 0);
-                    obtain2.readException();
-                    return obtain2.readInt() != 0;
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void match(final int n, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-                IBinder binder = null;
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeInt(n);
-                    if (fingerprintServiceCallback != null) {
-                        binder = fingerprintServiceCallback.asBinder();
-                    }
-                    obtain.writeStrongBinder(binder);
-                    this.mRemote.transact(2, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void matchAny(final int n, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-                IBinder binder = null;
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeInt(n);
-                    if (fingerprintServiceCallback != null) {
-                        binder = fingerprintServiceCallback.asBinder();
-                    }
-                    obtain.writeStrongBinder(binder);
-                    this.mRemote.transact(3, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void remove(final int n, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-                IBinder binder = null;
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeInt(n);
-                    if (fingerprintServiceCallback != null) {
-                        binder = fingerprintServiceCallback.asBinder();
-                    }
-                    obtain.writeStrongBinder(binder);
-                    this.mRemote.transact(4, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void setLivenessEnabled(final byte[] array, final boolean b) throws RemoteException {
-                int n = 0;
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    obtain.writeByteArray(array);
-                    if (b) {
-                        n = 1;
-                    }
-                    obtain.writeInt(n);
-                    this.mRemote.transact(9, obtain, obtain2, 0);
-                    obtain2.readException();
-                }
-                finally {
-                    obtain2.recycle();
-                    obtain.recycle();
-                }
-            }
-            
+
             @Override
             public String version() throws RemoteException {
                 final Parcel obtain = Parcel.obtain();
                 final Parcel obtain2 = Parcel.obtain();
                 try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintService");
-                    this.mRemote.transact(6, obtain, obtain2, 0);
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+
+                    mRemote.transact(TRANSACTION_version, obtain, obtain2, 0);
+
                     obtain2.readException();
                     return obtain2.readString();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
                 }
-                finally {
+            }
+
+            @Override
+            public void enableFingerEvent(int n) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(DESCRIPTOR);
+                    obtain.writeInt(n);
+
+                    mRemote.transact(TRANSACTION_enableFingerEvent, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void disableFingerEvent() throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(DESCRIPTOR);
+
+                    mRemote.transact(TRANSACTION_disableFingerEvent, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void setLivenessEnabled(final byte[] array, boolean b) throws RemoteException {
+                final Parcel obtain = Parcel.obtain();
+                final Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeByteArray(array);
+                    obtain.writeInt(b ? 1 : 0);
+
+                    mRemote.transact(TRANSACTION_setLivenessEnabled, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                } finally {
+                    obtain2.recycle();
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public boolean getLivenessEnabled(byte[] array) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeByteArray(array);
+
+                    mRemote.transact(TRANSACTION_getLivenessEnabled, obtain, obtain2, 0);
+
+                    obtain2.readException();
+                    return obtain2.readInt() != 0;
+                } finally {
                     obtain2.recycle();
                     obtain.recycle();
                 }

@@ -5,103 +5,95 @@ import android.util.*;
 import android.content.*;
 import android.os.*;
 
-public class FingerprintService extends Service
-{
-    static final String TAG = "qfp-service";
-    IAndroidServices androidServices;
-    SleepReceiver sleepReceiver;
-    
+public class FingerprintService extends Service {
+    private static final String TAG = "qfp-service";
+
+    private SleepReceiver sleepReceiver;
+
     public FingerprintService() {
-        this.sleepReceiver = new SleepReceiver();
+        sleepReceiver = new SleepReceiver();
     }
-    
-    public IBinder onBind(final Intent intent) {
-        if (IFingerprintService.class.getName().equals(intent.getAction())) {
+
+    public IBinder onBind(Intent intent) {
+        if (intent == null) {
+            Log.d(TAG, "onBind with null intent");
+            return null;
+        }
+
+        if (intent.getAction().equals(IFingerprintService.class.getName())) {
             try {
-                Log.d("qfp-service", "returning FingerprintService for intent: " + intent.getAction());
-                return (IBinder)new FingerprintServiceStub((Context)this);
+                Log.d(TAG, "returning FingerprintService for intent: " + intent.getAction());
+                return (IBinder) new FingerprintServiceStub(this);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getLocalizedMessage());
             }
-            catch (Exception ex) {
-                Log.e("qfp-service", ex.getLocalizedMessage());
-                return null;
-            }
-        }
-        if (IFingerprintAuthenticator.class.getName().equals(intent.getAction())) {
+        } else if (intent.getAction().equals(IFingerprintAuthenticator.class.getName())) {
             try {
-                Log.d("qfp-service", "returning FingerprintAuthenticator for intent: " + intent.getAction());
-                return (IBinder)new FingerprintAuthenticator((Context)this);
+                Log.d(TAG, "returning FingerprintAuthenticator for intent: " + intent.getAction());
+                return (IBinder) new FingerprintAuthenticator(this);
+            } catch (Exception ex) {
+                Log.e(TAG, ex.getLocalizedMessage());
             }
-            catch (Exception ex2) {
-                Log.e("qfp-service", ex2.getLocalizedMessage());
-                return null;
-            }
+        } else {
+            Log.d(TAG, "onBind with intent " + intent.getAction());
         }
-        if (intent != null) {
-            Log.d("qfp-service", "onBind with intent " + intent.getAction());
-        }
-        else {
-            Log.d("qfp-service", "onBind with null intent");
-        }
+
         return null;
     }
-    
+
     public void onCreate() {
-        Log.d("qfp-service", "onCreate");
-        this.registerReceiver((BroadcastReceiver)this.sleepReceiver, new IntentFilter("android.intent.action.SCREEN_OFF"));
-        this.registerReceiver((BroadcastReceiver)this.sleepReceiver, new IntentFilter("android.intent.action.SCREEN_ON"));
-        this.androidServices = new AndroidServices((Context)this);
-        final Native native1 = new Native();
-        native1.registerAndroidServices(this.androidServices);
-        final long open = native1.open();
+        Log.d(TAG, "onCreate");
+
+        registerReceiver((BroadcastReceiver) sleepReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+        registerReceiver((BroadcastReceiver) sleepReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+        IAndroidServices androidServices = new AndroidServices(this);
+
+        Native jni = new Native();
+        jni.registerAndroidServices(androidServices);
+
+        final long open = jni.open();
         if (open == 0L || open == -1L) {
-            Log.e("qfp-service", "failed native open");
+            Log.e(TAG, "failed native open");
+            return;
         }
-        else {
-            Log.d("qfp-service", "SUCCESS native open");
-            int n;
-            if (((PowerManager)this.getSystemService("power")).isInteractive()) {
-                n = 2;
-            }
-            else {
-                n = 1;
-            }
-            native1.notifyPowerState(open, n);
-        }
+
+        Log.d(TAG, "SUCCESS native open");
+        jni.notifyPowerState(open,
+                ((PowerManager) getSystemService("power")).isInteractive() ? 2 : 1);
     }
-    
+
     public void onDestroy() {
-        Log.e("qfp-service", "onDestroy");
+        Log.e(TAG, "onDestroy");
     }
-    
-    public int onStartCommand(final Intent intent, final int n, final int n2) {
-        Log.d("qfp-service", "onStartCommand return STICKY");
+
+    public int onStartCommand(Intent intent, int n, int n2) {
+        Log.d(TAG, "onStartCommand return STICKY");
         return 1;
     }
-    
-    class SleepReceiver extends BroadcastReceiver
-    {
-        Native jni;
-        
+
+    class SleepReceiver extends BroadcastReceiver {
+        private Native mJni;
+
         SleepReceiver() {
-            this.jni = new Native();
+            mJni = new Native();
         }
-        
-        public void onReceive(final Context context, final Intent intent) {
-            final long open = this.jni.open();
-            if (open == 0L || open == -1L) {
-                Log.e("qfp-service", "failed native open");
+
+        public void onReceive(Context context, Intent intent) {
+            long open = mJni.open();
+            if (open == 0 || open == -1) {
+                Log.e(TAG, "failed native open");
+                return;
             }
-            else {
-                if ("android.intent.action.SCREEN_OFF".equals(intent.getAction())) {
-                    Log.d("qfp-service", "screen off");
-                    this.jni.notifyPowerState(open, 1);
-                }
-                else if ("android.intent.action.SCREEN_ON".equals(intent.getAction())) {
-                    Log.d("qfp-service", "screen on");
-                    this.jni.notifyPowerState(open, 2);
-                }
-                this.jni.close(open);
+
+            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)) {
+                Log.d(TAG, "screen off");
+                mJni.notifyPowerState(open, 1);
+            } else if (intent.getAction().equals(Intent.ACTION_SCREEN_ON)) {
+                Log.d(TAG, "screen on");
+                mJni.notifyPowerState(open, 2);
             }
+
+            mJni.close(open);
         }
     }
 }

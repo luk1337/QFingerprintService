@@ -1,40 +1,39 @@
 package com.qualcomm.qti.biometrics.fingerprint.service;
 
-public class Native
-{
+public class Native {
     private static final String JNI_LIB = "qfp-service";
-    
+
     static {
-        System.loadLibrary("qfp-service");
+        System.loadLibrary(JNI_LIB);
     }
-    
-    public native int cancel(final long p0);
-    
-    public native void close(final long p0);
-    
-    public native int disableFingerEvent(final long p0);
-    
-    public native int enableFingerEvent(final long p0, final int p1);
-    
-    public native int enroll(final long p0, final INativeCallback p1, final int p2, final String p3);
-    
-    public native int getLivenessEnabled(final long p0, final byte[] p1, final int[] p2);
-    
+
+    public native int cancel(long p0);
+
+    public native void close(long p0);
+
+    public native int disableFingerEvent(long p0);
+
+    public native int enableFingerEvent(long p0, int p1);
+
+    public native int enroll(long p0, INativeCallback p1, int p2, String p3);
+
+    public native int getLivenessEnabled(long p0, byte[] p1, int[] p2);
+
     public native boolean isFingerprintEnabled();
-    
-    public native int match(final long p0, final INativeCallback p1, final int p2, final String p3, final byte[] p4, final String p5, final int p6);
-    
-    public native int notifyAlarm(final long p0);
-    
-    public native int notifyPowerState(final long p0, final int p1);
-    
+
+    public native int match(long p0, INativeCallback p1, int p2, String p3, byte[] p4, String p5, int p6);
+
+    public native int notifyAlarm(long p0);
+
+    public native int notifyPowerState(long p0, int p1);
+
     public native long open();
-    
-    public native int registerAndroidServices(final IAndroidServices p0);
-    
-    public native int remove(final long p0, final INativeCallback p1, final String p2, final int p3);
-    
-    public native int retrieveUser(final long p0, final long p1, final String[] p2);
-    
-    public native int setLivenessEnabled(final long p0, final byte[] p1, final boolean p2);
+
+    public native int registerAndroidServices(IAndroidServices p0);
+
+    public native int remove(long p0, INativeCallback p1, String p2, int p3);
+
+    public native int retrieveUser(long p0, long p1, String[] p2);
+
+    public native int setLivenessEnabled(long p0, byte[] p1, boolean p2);
 }

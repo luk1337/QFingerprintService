@@ -1,164 +1,162 @@
 package com.qualcomm.qti.biometrics.fingerprint.service;
 
-import android.os.*;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.IInterface;
+import android.os.Parcel;
+import android.os.RemoteException;
 
-public interface IFingerprintServiceCallback extends IInterface
-{
-    void onEnrolled(final int p0, final int p1) throws RemoteException;
-    
-    void onError(final int p0) throws RemoteException;
-    
-    void onMatched(final int p0, final String p1) throws RemoteException;
-    
-    void onRemoved(final int p0) throws RemoteException;
-    
-    void onStatus(final int p0, final byte[] p1) throws RemoteException;
-    
-    public abstract static class Stub extends Binder implements IFingerprintServiceCallback
-    {
+public interface IFingerprintServiceCallback extends IInterface {
+    void onMatched(int p0, final String p1) throws RemoteException;
+
+    void onRemoved(int p0) throws RemoteException;
+
+    void onError(int p0) throws RemoteException;
+
+    void onStatus(int p0, byte[] p1) throws RemoteException;
+
+    void onEnrolled(int p0, int p1) throws RemoteException;
+
+    public abstract static class Stub extends Binder implements IFingerprintServiceCallback {
         private static final String DESCRIPTOR = "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback";
-        static final int TRANSACTION_onEnrolled = 5;
-        static final int TRANSACTION_onError = 3;
-        static final int TRANSACTION_onMatched = 1;
-        static final int TRANSACTION_onRemoved = 2;
-        static final int TRANSACTION_onStatus = 4;
-        
+
+        private static final int TRANSACTION_onMatched = 1;
+        private static final int TRANSACTION_onRemoved = 2;
+        private static final int TRANSACTION_onError = 3;
+        private static final int TRANSACTION_onStatus = 4;
+        private static final int TRANSACTION_onEnrolled = 5;
+        private static final int TRANSACTION_onWriteDescriptor = 1598968902;
+
         public Stub() {
-            this.attachInterface((IInterface)this, "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
+            attachInterface(this, DESCRIPTOR);
         }
-        
-        public static IFingerprintServiceCallback asInterface(final IBinder binder) {
+
+        public static IFingerprintServiceCallback asInterface(IBinder binder) {
             if (binder == null) {
                 return null;
             }
-            final IInterface queryLocalInterface = binder.queryLocalInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
+
+            IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
             if (queryLocalInterface != null && queryLocalInterface instanceof IFingerprintServiceCallback) {
-                return (IFingerprintServiceCallback)queryLocalInterface;
+                return (IFingerprintServiceCallback) queryLocalInterface;
             }
+
             return new Proxy(binder);
         }
-        
+
         public IBinder asBinder() {
-            return (IBinder)this;
+            return this;
         }
-        
-        public boolean onTransact(final int n, final Parcel parcel, final Parcel parcel2, final int n2) throws RemoteException {
+
+        public boolean onTransact(int n, Parcel parcel, Parcel parcel2, int n2) throws RemoteException {
             switch (n) {
-                default: {
+                case TRANSACTION_onMatched:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    onMatched(parcel.readInt(), parcel.readString());
+                    return true;
+                case TRANSACTION_onRemoved:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    onRemoved(parcel.readInt());
+                    return true;
+                case TRANSACTION_onError:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    onError(parcel.readInt());
+                    return true;
+                case TRANSACTION_onStatus:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    onStatus(parcel.readInt(), parcel.createByteArray());
+                    return true;
+                case TRANSACTION_onEnrolled:
+                    parcel.enforceInterface(DESCRIPTOR);
+                    onEnrolled(parcel.readInt(), parcel.readInt());
+                    return true;
+                case TRANSACTION_onWriteDescriptor:
+                    parcel2.writeString(DESCRIPTOR);
+                    return true;
+                default:
                     return super.onTransact(n, parcel, parcel2, n2);
-                }
-                case 1598968902: {
-                    parcel2.writeString("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    return true;
-                }
-                case 1: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    this.onMatched(parcel.readInt(), parcel.readString());
-                    return true;
-                }
-                case 2: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    this.onRemoved(parcel.readInt());
-                    return true;
-                }
-                case 3: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    this.onError(parcel.readInt());
-                    return true;
-                }
-                case 4: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    this.onStatus(parcel.readInt(), parcel.createByteArray());
-                    return true;
-                }
-                case 5: {
-                    parcel.enforceInterface("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    this.onEnrolled(parcel.readInt(), parcel.readInt());
-                    return true;
-                }
             }
         }
-        
-        private static class Proxy implements IFingerprintServiceCallback
-        {
+
+        private static class Proxy implements IFingerprintServiceCallback {
             private IBinder mRemote;
-            
-            Proxy(final IBinder mRemote) {
+
+            Proxy(IBinder mRemote) {
                 this.mRemote = mRemote;
             }
-            
+
             public IBinder asBinder() {
-                return this.mRemote;
+                return mRemote;
             }
-            
+
             public String getInterfaceDescriptor() {
-                return "com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback";
+                return DESCRIPTOR;
             }
-            
+
             @Override
-            public void onEnrolled(final int n, final int n2) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+            public void onMatched(int n, String s) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
                 try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    obtain.writeInt(n);
-                    obtain.writeInt(n2);
-                    this.mRemote.transact(5, obtain, (Parcel)null, 1);
-                }
-                finally {
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void onError(final int n) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
-                    obtain.writeInt(n);
-                    this.mRemote.transact(3, obtain, (Parcel)null, 1);
-                }
-                finally {
-                    obtain.recycle();
-                }
-            }
-            
-            @Override
-            public void onMatched(final int n, final String s) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeInt(n);
                     obtain.writeString(s);
-                    this.mRemote.transact(1, obtain, (Parcel)null, 1);
-                }
-                finally {
+
+                    mRemote.transact(TRANSACTION_onMatched, obtain, null, 1);
+                } finally {
                     obtain.recycle();
                 }
             }
-            
+
             @Override
-            public void onRemoved(final int n) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+            public void onRemoved(int n) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
                 try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeInt(n);
-                    this.mRemote.transact(2, obtain, (Parcel)null, 1);
-                }
-                finally {
+
+                    mRemote.transact(TRANSACTION_onRemoved, obtain, null, 1);
+                } finally {
                     obtain.recycle();
                 }
             }
-            
+
             @Override
-            public void onStatus(final int n, final byte[] array) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+            public void onError(int n) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
                 try {
-                    obtain.writeInterfaceToken("com.qualcomm.qti.biometrics.fingerprint.service.IFingerprintServiceCallback");
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeInt(n);
+
+                    mRemote.transact(TRANSACTION_onError, obtain, null, 1);
+                } finally {
+                    obtain.recycle();
+                }
+            }
+
+            @Override
+            public void onStatus(int n, byte[] array) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeInt(n);
                     obtain.writeByteArray(array);
-                    this.mRemote.transact(4, obtain, (Parcel)null, 1);
+
+                    mRemote.transact(TRANSACTION_onStatus, obtain, null, 1);
+                } finally {
+                    obtain.recycle();
                 }
-                finally {
+            }
+
+            @Override
+            public void onEnrolled(int n, int n2) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                try {
+                    obtain.writeInterfaceToken(getInterfaceDescriptor());
+                    obtain.writeInt(n);
+                    obtain.writeInt(n2);
+
+                    mRemote.transact(TRANSACTION_onEnrolled, obtain, null, 1);
+                } finally {
                     obtain.recycle();
                 }
             }

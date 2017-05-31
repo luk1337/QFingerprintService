@@ -1,49 +1,49 @@
 package com.qualcomm.qti.biometrics.fingerprint.service;
 
-import android.content.*;
-import android.util.*;
-import android.os.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Process;
+import android.util.Log;
 
-public class ShutdownReceiver extends BroadcastReceiver
-{
-    private final String TAG;
-    
-    public ShutdownReceiver() {
-        this.TAG = "qfp-service";
+public class ShutdownReceiver extends BroadcastReceiver {
+    private static final String TAG = "qfp-service";
+
+    public static int getUserId(int uid) {
+        return uid / 100000;
     }
-    
-    public static final int getUserId(final int n) {
-        return n / 100000;
-    }
-    
-    public void onReceive(final Context context, final Intent intent) {
-        if (!new Native().isFingerprintEnabled()) {
-            Log.i("qfp-service", "fingerprint not enabled");
+
+    public void onReceive(Context context, Intent intent) {
+        Native jni = new Native();
+        if (jni.isFingerprintEnabled()) {
+            Log.i(TAG, "fingerprint not enabled");
             return;
         }
-        if ("android.intent.action.BOOT_COMPLETED".equals(intent.getAction())) {
-            Log.d("qfp-service", "boot complete");
-            context.startService(new Intent(context, (Class)FingerprintService.class));
-        }
-        else if ("android.intent.action.ACTION_SHUTDOWN".equals(intent.getAction())) {
-            final int userId = getUserId(android.os.Process.myUid());
-            if (userId == 0) {
-                Log.d("qfp-service", "got shutdown from main space");
-                final Native native1 = new Native();
-                final long open = native1.open();
-                if (open == 0L || open == -1L) {
-                    Log.e("qfp-service", "failed native open");
-                    return;
-                }
-                final int notifyPowerState = native1.notifyPowerState(open, 0);
-                if (notifyPowerState != 0) {
-                    Log.e("qfp-service", "failed to shutdown " + notifyPowerState);
-                }
-                context.stopService(new Intent(context, (Class)FingerprintService.class));
+
+        if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
+            Log.d(TAG, "boot complete");
+            context.startService(new Intent(context, FingerprintService.class));
+        } else if (intent.getAction().equals(Intent.ACTION_SHUTDOWN)) {
+            int userId = getUserId(Process.myUid());
+            if (userId != 0) {
+                Log.d(TAG, "got shutdown from second space (Ignore it), userId: " + userId);
+                return;
             }
-            else {
-                Log.d("qfp-service", "got shutdown from second space (Ignore it), userId: " + userId);
+
+            Log.d(TAG, "got shutdown from main space");
+
+            long open = jni.open();
+            if (open == 0 || open == -1) {
+                Log.e(TAG, "failed native open");
+                return;
             }
+
+            int notifyPowerState = jni.notifyPowerState(open, 0);
+            if (notifyPowerState != 0) {
+                Log.e(TAG, "failed to shutdown " + notifyPowerState);
+            }
+
+            context.stopService(new Intent(context, FingerprintService.class));
         }
     }
 }
