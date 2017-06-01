@@ -7,7 +7,7 @@ import android.os.Parcel;
 import android.os.RemoteException;
 
 public interface IFingerprintServiceCallback extends IInterface {
-    void onMatched(int fingerprintId, final String user) throws RemoteException;
+    void onMatched(int fingerprintId, String user) throws RemoteException;
 
     void onRemoved(int fingerprintId) throws RemoteException;
 

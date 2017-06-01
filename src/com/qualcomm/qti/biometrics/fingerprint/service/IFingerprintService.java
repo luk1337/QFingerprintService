@@ -46,12 +46,12 @@ public interface IFingerprintService extends IInterface {
             attachInterface(this, DESCRIPTOR);
         }
 
-        public static IFingerprintService asInterface(final IBinder binder) {
+        public static IFingerprintService asInterface(IBinder binder) {
             if (binder == null) {
                 return null;
             }
 
-            final IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
+            IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
             if (queryLocalInterface != null && queryLocalInterface instanceof IFingerprintService) {
                 return (IFingerprintService) queryLocalInterface;
             }
@@ -248,8 +248,8 @@ public interface IFingerprintService extends IInterface {
 
             @Override
             public String version() throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
 
@@ -297,9 +297,9 @@ public interface IFingerprintService extends IInterface {
             }
 
             @Override
-            public void setLivenessEnabled(final byte[] array, boolean b) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+            public void setLivenessEnabled(byte[] array, boolean b) throws RemoteException {
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(array);

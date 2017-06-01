@@ -51,7 +51,7 @@ public class FingerprintService extends Service {
         Native jni = new Native();
         jni.registerAndroidServices(androidServices);
 
-        final long open = jni.open();
+        long open = jni.open();
         if (open == 0L || open == -1L) {
             Log.e(TAG, "failed native open");
             return;

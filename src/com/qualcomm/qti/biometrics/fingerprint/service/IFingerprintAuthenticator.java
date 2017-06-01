@@ -28,12 +28,12 @@ public interface IFingerprintAuthenticator extends IInterface {
             attachInterface(this, DESCRIPTOR);
         }
 
-        public static IFingerprintAuthenticator asInterface(final IBinder binder) {
+        public static IFingerprintAuthenticator asInterface(IBinder binder) {
             if (binder == null) {
                 return null;
             }
 
-            final IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
+            IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
             if (queryLocalInterface != null && queryLocalInterface instanceof IFingerprintAuthenticator) {
                 return (IFingerprintAuthenticator) queryLocalInterface;
             }
@@ -96,8 +96,8 @@ public interface IFingerprintAuthenticator extends IInterface {
                     binder = fingerprintAuthenticatorListener.asBinder();
                 }
 
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(array);
@@ -120,8 +120,8 @@ public interface IFingerprintAuthenticator extends IInterface {
                     binder = fingerprintAuthenticatorListener.asBinder();
                 }
 
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(array);
@@ -143,7 +143,7 @@ public interface IFingerprintAuthenticator extends IInterface {
                     binder = fingerprintAuthenticatorListener.asBinder();
                 }
 
-                final Parcel obtain = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeLong(n);
@@ -162,8 +162,8 @@ public interface IFingerprintAuthenticator extends IInterface {
                     binder = fingerprintAuthenticatorListener.asBinder();
                 }
 
-                final Parcel obtain = Parcel.obtain();
-                final Parcel obtain2 = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
+                Parcel obtain2 = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(array);

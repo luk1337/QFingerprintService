@@ -48,7 +48,7 @@ public class AndroidServices implements IAndroidServices {
     }
 
     private void uiResetLivenessAlert() {
-        final Editor edit = mContext.getSharedPreferences(PREFS_SHOW_LIVENESS_ALERT_NAME, 0).edit();
+        Editor edit = mContext.getSharedPreferences(PREFS_SHOW_LIVENESS_ALERT_NAME, 0).edit();
         edit.putString(SHOW_LIVENESS_ALERT_STR, "Yes");
         edit.commit();
     }

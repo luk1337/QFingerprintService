@@ -30,7 +30,7 @@ public interface IFingerprintAuthenticatorListener extends IInterface {
                 return null;
             }
 
-            final IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
+            IInterface queryLocalInterface = binder.queryLocalInterface(DESCRIPTOR);
             if (queryLocalInterface != null && queryLocalInterface instanceof IFingerprintAuthenticatorListener) {
                 return (IFingerprintAuthenticatorListener) queryLocalInterface;
             }
@@ -81,7 +81,7 @@ public interface IFingerprintAuthenticatorListener extends IInterface {
 
             @Override
             public void onUserVerificationResult(byte[] nonce, int errorId, String authName, long n, long n2, byte[] array) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(nonce);
@@ -99,7 +99,7 @@ public interface IFingerprintAuthenticatorListener extends IInterface {
 
             @Override
             public void onCancel(byte[] array) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeByteArray(array);
@@ -112,7 +112,7 @@ public interface IFingerprintAuthenticatorListener extends IInterface {
 
             @Override
             public void onEnrollmentStatus(long n, boolean b) throws RemoteException {
-                final Parcel obtain = Parcel.obtain();
+                Parcel obtain = Parcel.obtain();
                 try {
                     obtain.writeInterfaceToken(getInterfaceDescriptor());
                     obtain.writeLong(n);

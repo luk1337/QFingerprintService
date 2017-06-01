@@ -10,8 +10,8 @@ public class FingerprintServiceStub implements AutoCloseable {
     private static final String TAG = "qfp-service";
 
     private Context mContext;
+    private Native mJni;
     private long mJniContext;
-    private final Native mJni;
 
     public FingerprintServiceStub(Context mContext) throws RemoteException {
         this.mContext = mContext;
@@ -71,34 +71,34 @@ public class FingerprintServiceStub implements AutoCloseable {
         close();
     }
 
-    public boolean getLivenessEnabled(final byte[] array) throws RemoteException {
-        final int[] array2 = {0};
+    public boolean getLivenessEnabled(byte[] array) throws RemoteException {
+        int[] array2 = {0};
 
         Log.d(TAG, "getLivenessEnabled()");
         throwIfFail(mJni.getLivenessEnabled(mJniContext, array, array2));
         return array2[0] != 0;
     }
 
-    public void match(final int i, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-        String userName = this.getUserName();
+    public void match(int i, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+        String userName = getUserName();
 
         Log.d(TAG, "match(" + i + ") - " + userName);
         throwIfFail(mJni.match(mJniContext, new JniCallback(fingerprintServiceCallback), i, userName, new byte[0], "", 0));
     }
 
-    public void matchAny(final int i, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+    public void matchAny(int i, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
         Log.d(TAG, "matchAny(" + i + ")");
         throwIfFail(mJni.match(mJniContext, new JniCallback(fingerprintServiceCallback), i, "", new byte[0], "", 0));
     }
 
-    public void remove(final int i, final IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
-        String userName = this.getUserName();
+    public void remove(int i, IFingerprintServiceCallback fingerprintServiceCallback) throws RemoteException {
+        String userName = getUserName();
 
         Log.d(TAG, "remove(" + i + ")");
         throwIfFail(mJni.remove(mJniContext, new JniCallback(fingerprintServiceCallback), userName, i));
     }
 
-    public void setLivenessEnabled(final byte[] array, final boolean b) throws RemoteException {
+    public void setLivenessEnabled(byte[] array, boolean b) throws RemoteException {
         Log.d(TAG, "setLivenessEnabled()");
         throwIfFail(mJni.setLivenessEnabled(mJniContext, array, b));
     }
@@ -108,9 +108,9 @@ public class FingerprintServiceStub implements AutoCloseable {
     }
 
     protected class JniCallback implements INativeCallback {
-        private final QfpRemoteCallbackList mCallbacks;
+        private QfpRemoteCallbackList mCallbacks;
 
-        public JniCallback(final IFingerprintServiceCallback fingerprintServiceCallback) {
+        public JniCallback(IFingerprintServiceCallback fingerprintServiceCallback) {
             mCallbacks = new QfpRemoteCallbackList();
 
             Log.d(TAG, "JniCallback ctor:  hc: " + getId() + " cb hc: " + getId(fingerprintServiceCallback));
