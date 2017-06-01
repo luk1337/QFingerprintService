@@ -101,21 +101,36 @@ public class AndroidServices implements IAndroidServices {
     @Override
     public void setWakelock(boolean active, boolean partial) {
         if (partial) {
-            if (active && mWakelockCount++ == 0) {
-                Log.d(TAG, "acquire partial wakelock");
-                mWakelock.acquire();
-            } else if (!active && mWakelockCount-- == 0) {
-                Log.d(TAG, "release partial wakelock");
-                mWakelock.release();
+            if (active) {
+                mWakelockCount++;
+
+                if (mWakelockCount == 0) {
+                    Log.d(TAG, "acquire partial wakelock");
+                    mWakelock.acquire();
+                }
+            } else {
+                mWakelockCount--;
+
+                if (mWakelockCount == 0) {
+                    Log.d(TAG, "release partial wakelock");
+                    mWakelock.release();
+                }
             }
         } else {
-            if (active && mFullWakelockCount++ == 0) {
-                Log.d(TAG, "acquire full wakelock");
-                mFullWakelock.acquire();
-                return;
-            } else if (!active && mFullWakelockCount-- == 0) {
-                Log.d(TAG, "release full wakelock");
-                mFullWakelock.release();
+            if (active) {
+                mFullWakelockCount++;
+
+                if (mFullWakelockCount == 0) {
+                    Log.d(TAG, "acquire full wakelock");
+                    mFullWakelock.acquire();
+                }
+            } else {
+                mFullWakelockCount--;
+
+                if (mFullWakelockCount == 0) {
+                    Log.d(TAG, "release full wakelock");
+                    mFullWakelock.release();
+                }
             }
         }
     }
