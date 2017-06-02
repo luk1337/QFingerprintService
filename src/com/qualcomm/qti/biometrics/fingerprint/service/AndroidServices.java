@@ -25,9 +25,7 @@ public class AndroidServices implements IAndroidServices {
     private Handler mHandler;
 
     private WakeLock mWakelock;
-    private int mWakelockCount;
     private WakeLock mFullWakelock;
-    private int mFullWakelockCount;
 
     private static boolean livenessAlertIsShown;
 
@@ -102,32 +100,24 @@ public class AndroidServices implements IAndroidServices {
     public void setWakelock(boolean active, boolean partial) {
         if (partial) {
             if (active) {
-                mWakelockCount++;
-
-                if (mWakelockCount == 0) {
+                if (!mWakelock.isHeld()) {
                     Log.d(TAG, "acquire partial wakelock");
                     mWakelock.acquire();
                 }
             } else {
-                mWakelockCount--;
-
-                if (mWakelockCount == 0) {
+                if (mWakelock.isHeld()) {
                     Log.d(TAG, "release partial wakelock");
                     mWakelock.release();
                 }
             }
         } else {
             if (active) {
-                mFullWakelockCount++;
-
-                if (mFullWakelockCount == 0) {
+                if (!mFullWakelock.isHeld()) {
                     Log.d(TAG, "acquire full wakelock");
                     mFullWakelock.acquire();
                 }
             } else {
-                mFullWakelockCount--;
-
-                if (mFullWakelockCount == 0) {
+                if (mFullWakelock.isHeld()) {
                     Log.d(TAG, "release full wakelock");
                     mFullWakelock.release();
                 }
