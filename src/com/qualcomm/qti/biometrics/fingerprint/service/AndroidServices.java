@@ -25,7 +25,9 @@ public class AndroidServices implements IAndroidServices {
     private Handler mHandler;
 
     private WakeLock mWakelock;
+    private int mWakelockCount;
     private WakeLock mFullWakelock;
+    private int mFullWakelockCount;
 
     private static boolean livenessAlertIsShown;
 
@@ -98,28 +100,38 @@ public class AndroidServices implements IAndroidServices {
 
     @Override
     public void setWakelock(boolean active, boolean partial) {
+        Log.d(TAG, "setWakelock active=" + active + " partial=" + partial + " mWakelockCount=" + mWakelockCount + " mWakelockCount=" + mWakelockCount);
+
         if (partial) {
             if (active) {
-                if (!mWakelock.isHeld()) {
-                    Log.d(TAG, "acquire partial wakelock");
-                    mWakelock.acquire();
+                mWakelockCount++;
+                if (mWakelockCount == 0) {
+                    if (!mWakelock.isHeld()) {
+                        mWakelock.acquire();
+                    }
                 }
             } else {
-                if (mWakelock.isHeld()) {
-                    Log.d(TAG, "release partial wakelock");
-                    mWakelock.release();
+                mWakelockCount--;
+                if (mWakelockCount == 0) {
+                    if (mWakelock.isHeld()) {
+                        mWakelock.release();
+                    }
                 }
             }
         } else {
             if (active) {
-                if (!mFullWakelock.isHeld()) {
-                    Log.d(TAG, "acquire full wakelock");
-                    mFullWakelock.acquire();
+                mFullWakelockCount++;
+                if (mFullWakelockCount == 0) {
+                    if (!mFullWakelock.isHeld()) {
+                        mFullWakelock.acquire();
+                    }
                 }
             } else {
-                if (mFullWakelock.isHeld()) {
-                    Log.d(TAG, "release full wakelock");
-                    mFullWakelock.release();
+                mFullWakelockCount--;
+                if (mFullWakelockCount == 0) {
+                    if (mFullWakelock.isHeld()) {
+                        mFullWakelock.release();
+                    }
                 }
             }
         }
